@@ -32,16 +32,24 @@ class LightCard2025 extends HTMLElement {
         const config = this._config;
 
         if (state) {
-            const icon = this._validateIcon(config.icon) ? this._validateIcon(config.icon) : attributes.icon ? attributes.icon : 'mdi:lightbulb';
+            const validateIcon = this._validateIcon(config.icon); 
+            const icon = validateIcon ? validateIcon : attributes.icon ? attributes.icon : 'mdi:lightbulb';
             const name = config.name ? config.name : attributes.friendly_name ? attributes.friendly_name : entityId;
             const hue = attributes.hs_color ? attributes.hs_color[0].toFixed(0) : 0;
             const saturation = attributes.hs_color ? attributes.hs_color[1].toFixed(2) : 0;
-            const lightness = attributes.brightness ? attributes.brightness : 1;
+            const brightness = attributes.brightness ? attributes.brightness : 1;
             const kelvin = attributes.color_temp_kelvin ? attributes.color_temp_kelvin : 2000;
             const minKelvin = kelvinToRgb(attributes.min_color_temp_kelvin ? attributes.min_color_temp_kelvin : 2000);
             const maxKelvin = kelvinToRgb(attributes.max_color_temp_kelvin ? attributes.max_color_temp_kelvin : 6500);
 
-            let red, green, blue, warm, cold = attributes.rgbww_color ? attributes.rgbww_color : attributes.rgbw_color ? [...attributes.rgbw_color, 0] : attributes.rgb_color ? [...attributes.rgb_color, 0, 0] : [0, 0, 0, 0, 0]
+            let red = 0, green = 0, blue = 0, warm = 0, cold = 0;
+            if (attributes.rgbww_color) {
+                [red, green, blue, warm, cold] = attributes.rgbww_color;
+            } else if (attributes.rgbw_color) {
+                [red, green, blue, warm] = attributes.rgbw_color;
+            } else if (attributes.rgb_color) {
+                [red, green, blue] = attributes.rgb_color;
+            }
 
             let editorBtnHTML = '';
             const showEditorsValue = config.showEditors != null ? config.showEditors.toString().toLowerCase() : 'null';
@@ -160,7 +168,7 @@ class LightCard2025 extends HTMLElement {
                     .slider:hover {
                         filter: brightness(0.8);
                     }
-                    #lightness-slider {
+                    #brightness-slider {
                         background: linear-gradient(to right, hsl(${hue}, 100%, 0%), hsl(${hue}, 100%, 50%));
                     }
                     #kelvin-slider {
@@ -220,9 +228,9 @@ class LightCard2025 extends HTMLElement {
                         <ha-icon icon="mdi:lightbulb-off-outline"></ha-icon>
                     </button>
                 </div>
-                <div id="lightness" class="slider-header" title="Lightness: ${lightness} bit">
-                    <label>Lightness: <span id="lightness-value"><div>${(lightness/2.55).toFixed(2)} %</div><div>${lightness} bit</div></span></label>
-                    <input type="range" id="lightness-slider" class="slider" min="1" max="255" value="${lightness}">
+                <div id="brightness" class="slider-header" title="Brightness: ${brightness} bit">
+                    <label>Brightness: <span id="brightness-value"><div>${(brightness/2.55).toFixed(2)} %</div><div>${brightness} bit</div></span></label>
+                    <input type="range" id="brightness-slider" class="slider" min="1" max="255" value="${brightness}">
                 </div>
                 <div class="rider-group">
                     <button class="rider-btn" id="color-temp" data-mode="color-temp" title="Color-Temperature">Color Temp</button>
