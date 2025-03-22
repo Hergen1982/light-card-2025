@@ -1,0 +1,22 @@
+    # Light Card 2025
+
+Light Card 2025 ist eine benutzerdefinierte Lovelace-Karte für Home Assistant, die es ermöglicht, Lichtsteuerungen ansprechend und benutzerfreundlich darzustellen.
+
+## Funktionen
+
+- **Einfache Steuerung**: Ermöglicht das einfache Ein- und Ausschalten von Lichtern.
+- **Dimmen**: Unterstützt das Dimmen der Lichter.
+- **Farbsteuerung**: Ermöglicht die Steuerung der Lichtfarbe bei RGB-Lichtern.
+- **Anpassbares Design**: Bietet verschiedene Anpassungsoptionen für das Aussehen der Karte.
+
+## Installation
+
+### Manuelle Installation
+
+1. Laden Sie die Datei `light-card-2025.js` von [GitHub Releases](https://github.com/Hergen1982/light-card-2025/releases) herunter.
+2. Kopieren Sie die Datei in das Verzeichnis `/config/www/` Ihres Home Assistant Setups.
+3. Fügen Sie die folgende Zeile zu Ihrer `lovelace-ui.yaml` oder `configuration.yaml` hinzu:
+   ```yaml
+   resources:
+     - url: /local/light-card-2025.js
+       type: module

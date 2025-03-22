@@ -1,0 +1,18 @@
+{
+    "name": "Light Card 2025",
+    "content_in_root": true,
+    "filename": "light-card-2025.js",
+    "domains": ["lovelace"],
+    "country": "DE",
+    "homeassistant": "2021.0.0",
+    "persistent": true,
+    "render_readme": true,
+    "iot_class": "Local Push",
+    "zip_release": false,
+    "filename_expected": true,
+    "hide_default_branch": false,
+    "release_tag": "",
+    "releases": true,
+    "file_name": "light-card-2025.js",
+    "file_name_expected": true
+  }

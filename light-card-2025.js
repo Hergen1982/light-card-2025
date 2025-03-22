@@ -72,6 +72,7 @@ class LightCard2025 extends HTMLElement {
                         justify-content: space-between;
                     }
                     #icon {
+                        display: ${config.showIcon ? 'block' : 'none'};
                         --mdc-icon-size: 30px;
                         background: hsl(${hue}, ${saturation}%, 25%);
                         color: hsl(${hue}, ${saturation}%, 75%);
@@ -79,8 +80,9 @@ class LightCard2025 extends HTMLElement {
                         padding: 4px;
                     }
                     .header span {
+                        display: ${config.showName ? 'block' : 'none'};
                         font-size: 18px;
-                        font-weight: bold;
+                            font-weight: bold;
                         margin-left: 8px;
                         flex-grow: 1;
                         text-align: left;
@@ -218,59 +220,59 @@ class LightCard2025 extends HTMLElement {
                     ${editorBtnHTML}
                 </div>
                 <div class="control-group">
-                    <button class="control-btn" id="auto" data-mode="auto" title="Automatically">
+                    <button class="control-btn" id="auto" data-mode="auto" title="Automatisch">
                         <ha-icon icon="mdi:lightbulb-auto"></ha-icon>
                     </button>
-                    <button class="control-btn" id="on" data-mode="on" title="On">
+                    <button class="control-btn" id="on" data-mode="on" title="An">
                         <ha-icon icon="mdi:lightbulb-on"></ha-icon>
                     </button>
-                    <button class="control-btn" id="off" data-mode="off" title="Off">
+                    <button class="control-btn" id="off" data-mode="off" title="Aus">
                         <ha-icon icon="mdi:lightbulb-off-outline"></ha-icon>
                     </button>
                 </div>
-                <div id="brightness" class="slider-header" title="Brightness: ${brightness} bit">
-                    <label>Brightness: <span id="brightness-value"><div>${(brightness/2.55).toFixed(2)} %</div><div>${brightness} bit</div></span></label>
+                <div id="brightness" class="slider-header" title="Helligkeit: ${brightness} bit">
+                    <label>Helligkeit: <span id="brightness-value"><div>${(brightness/2.55).toFixed(2)} %</div><div>${brightness} bit</div></span></label>
                     <input type="range" id="brightness-slider" class="slider" min="1" max="255" value="${brightness}">
                 </div>
                 <div class="rider-group">
-                    <button class="rider-btn" id="color-temp" data-mode="color-temp" title="Color-Temperature">Color Temp</button>
-                    <button class="rider-btn" id="HS" data-mode="HS" title="Hue-Saturation-Color">HS-Color</button>
-                    <button class="rider-btn" id="HSW" data-mode="HSW" title="Hue-Saturation-White-Color">HSW-Color</button>
-                    <button class="rider-btn" id="HSWW" data-mode="HSWW" title="Hue-Saturation-White-White-Color">HSWW-Color</button>
-                    <button class="rider-btn" id="RGB" data-mode="RGB" title="Red-Green-Blue-Color">RGB-Color</button>
-                    <button class="rider-btn" id="RGBW" data-mode="RGBW" title="Red-Green-Blue-White-Color">RGBW-Color</button>
-                    <button class="rider-btn" id="RGBWW" data-mode="RGBWW" title="Red-Green-Blue-White-White-Color">RGBWW-Color</button>
+                    <button class="rider-btn" id="color-temp" data-mode="color-temp" title="Farbe-Temperatur">Farbe-Temp</button>
+                    <button class="rider-btn" id="HS" data-mode="HS" title="Farbton-Sättigung-Farbe">HS-Farbe</button>
+                    <button class="rider-btn" id="HSW" data-mode="HSW" title="Farbton-Sättigung-Weiß-Farbe">HSW-Farbe</button>
+                    <button class="rider-btn" id="HSWW" data-mode="HSWW" title="Farbton-Sättigung-Weiß-Weiß-Farbe">HSWW-Farbe</button>
+                    <button class="rider-btn" id="RGB" data-mode="RGB" title="Rot-Grün-Blau-Farbe">RGB-Farbe</button>
+                    <button class="rider-btn" id="RGBW" data-mode="RGBW" title="Rot-Grün-Blau-Weiß-Farbe">RGBW-Farbe</button>
+                    <button class="rider-btn" id="RGBWW" data-mode="RGBWW" title="Rot-Grün-Blau-Weiß-Weiß-Farbe">RGBWW-Farbe</button>
                 </div>
-                <div id="kelvin" class="slider-header" title="Kelvin: ${kelvin} K">
-                    <label>Kelvin: <span id="kelvin-value"><div>${attributes.color_temp ? attributes.color_temp : 0} mired</div><div>${kelvin} Kelvin</div></span></label>
+                <div id="kelvin" class="slider-header" title="Farbe-Temperatur: ${kelvin} K">
+                    <label>Farbe-Temperatur: <span id="kelvin-value"><div>${attributes.color_temp ? attributes.color_temp : 0} mired</div><div>${kelvin} Kelvin</div></span></label>
                     <input type="range" id="kelvin-slider" class="slider" min="${minKelvin}" max="${maxKelvin}" value="${kelvin}">
                 </div>
-                <div id="hue" class="slider-header" title="Hue: ${hue} °">
-                    <label>Hue: <span id="hue-value"><div>${hue} °</div></span></label>
+                <div id="hue" class="slider-header" title="Farbton: ${hue} °">
+                    <label>Farbton: <span id="hue-value"><div>${hue} °</div></span></label>
                     <input type="range" id="hue-slider" class="slider" min="0" max="360" value="${hue}">
                 </div>
-                <div id="saturation" class="slider-header" title="Saturation: ${saturation} %">
-                    <label>Saturation: <span id="saturation-value"><div>${saturation} %</div></span></label>
+                <div id="saturation" class="slider-header" title="Sättigung: ${saturation} %">
+                    <label>Sättigung: <span id="saturation-value"><div>${saturation} %</div></span></label>
                     <input type="range" id="saturation-slider" class="slider" min="0" max="100" value="${saturation}">
                 </div>
-                <div id="red" class="slider-header" title="Red: ${red} bit">
-                    <label>Red: <span id="red-value"><div>${(red/2.55).toFixed(2)}%</div><div>${red} bit</div></span></label>
+                <div id="red" class="slider-header" title="Rot: ${red} bit">
+                    <label>Rot: <span id="red-value"><div>${(red/2.55).toFixed(2)}%</div><div>${red} bit</div></span></label>
                     <input type="range" id="red-slider" class="slider" min="0" max="255" value="${red}">
                 </div>
-                <div id="green" class="slider-header" title="Green: ${green} bit">
-                    <label>Green: <span id="green-value"><div>${(green/2.55).toFixed(2)}%</div><div>${green} bit</div></span></label>
+                <div id="green" class="slider-header" title="Grün: ${green} bit">
+                    <label>Grün: <span id="green-value"><div>${(green/2.55).toFixed(2)}%</div><div>${green} bit</div></span></label>
                     <input type="range" id="green-slider" class="slider" min="0" max="255" value="${green}">
                 </div>
-                <div id="blue" class="slider-header" title="Blue: ${blue} bit">
-                    <label>Blue: <span id="blue-value"><div>${(blue/2.55).toFixed(2)}%</div><div>${blue} bit</div></span></label>
+                <div id="blue" class="slider-header" title="Blau: ${blue} bit">
+                    <label>Blau: <span id="blue-value"><div>${(blue/2.55).toFixed(2)}%</div><div>${blue} bit</div></span></label>
                     <input type="range" id="blue-slider" class="slider" min="0" max="255" value="${blue}">
                 </div>
-                <div id="warm" class="slider-header" title="Warm: ${warm} bit">
-                    <label>Warm: <span id="warm-value"><div>${(warm/2.55).toFixed(2)}%</div><div>${warm} bit</div></span></label>
+                <div id="warm" class="slider-header" title="Warmweiß: ${warm} bit">
+                    <label>Warmweiß: <span id="warm-value"><div>${(warm/2.55).toFixed(2)}%</div><div>${warm} bit</div></span></label>
                     <input type="range" id="warm-slider" class="slider" min="0" max="255" value="${warm}">
                 </div>
-                <div id="cold" class="slider-header" title="Cold: ${cold} bit">
-                    <label>Cold: <span id="cold-value"><div>${(cold/2.55).toFixed(2)}%</div><div>${cold} bit</div></span></label>
+                <div id="cold" class="slider-header" title="Kaltweiß: ${cold} bit">
+                    <label>Kaltweiß: <span id="cold-value"><div>${(cold/2.55).toFixed(2)}%</div><div>${cold} bit</div></span></label>
                     <input type="range" id="cold-slider" class="slider" min="0" max="255" value="${cold}">
                 </div>
             `;
@@ -286,8 +288,13 @@ class LightCard2025 extends HTMLElement {
         if (!config.entity) {
             throw new Error('Du musst eine Entität angeben');
         }
-        this._config = config;
-        this.render(); // Re-render the component when the configuration changes
+        this._config = {
+            showIcon: true,
+            showName: true,
+            showEditors: 'admin',
+            ...config
+        };
+        this.render();
     }
 
     getCardSize() {
