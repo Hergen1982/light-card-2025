@@ -8,10 +8,6 @@ class LightCard2025 extends HTMLElement {
     set hass(hass) {
         this._hass = hass;
 
-        if (this._prevEntity !== this._config.entity) {
-            return;
-        }
-
         const entityId = this._config.entity;
         const autoEntityId = this._config.autoEntity;
     
@@ -19,6 +15,7 @@ class LightCard2025 extends HTMLElement {
         const autoStateObj = autoEntityId ? hass.states[autoEntityId] : null;
     
         if (!stateObj) {
+            console.warn(`Entität ${entityId} nicht gefunden.`);
             return;
         }
 
@@ -52,9 +49,15 @@ class LightCard2025 extends HTMLElement {
         const autoEntityId = this._config.autoEntity;
         const state = this._hass.states[entityId];
         const autoState = autoEntityId ? this._hass.states[autoEntityId] : null;
-        const attributes = state.attributes;
+        const attributes = state.attributes ? state.attributes : {};
         const config = this._config;
-    
+
+        if (!state) {
+            this.content.innerHTML = `
+                <p>Entität nicht gefunden: ${entityId}</p>`;
+            return;
+        }    
+
         if (state) {
             let validateIcon = this._validateIcon(config.icon); 
             const icon = validateIcon ? validateIcon : attributes.icon ? attributes.icon : 'mdi:lightbulb';
@@ -66,9 +69,10 @@ class LightCard2025 extends HTMLElement {
             validateIcon = this._validateIcon(config.offButtonIcon);
             const offButtonIcon = validateIcon ? validateIcon : 'mdi:lightbulb-off-outline';
 
+            const isLightEntity = entityId.startsWith('light.');
+            const brightness = attributes.brightness ? attributes.brightness : 1;
             const hue = attributes.hs_color ? attributes.hs_color[0].toFixed(0) : 0;
             const saturation = attributes.hs_color ? attributes.hs_color[1].toFixed(2) : 0;
-            const brightness = attributes.brightness ? attributes.brightness : 1;
             const kelvin = attributes.color_temp_kelvin ? attributes.color_temp_kelvin : 2000;
             const minKelvin = kelvinToRgb(attributes.min_color_temp_kelvin ? attributes.min_color_temp_kelvin : 2000);
             const maxKelvin = kelvinToRgb(attributes.max_color_temp_kelvin ? attributes.max_color_temp_kelvin : 6500);
@@ -91,6 +95,13 @@ class LightCard2025 extends HTMLElement {
                     editorBtnHTML = this._generateEditorBtnHTML();
                 }
             }
+
+            const isEntityOn = state.state === 'on';
+            const isAutoEntityOn = autoState && autoState.state === 'on';
+            const autoButtonClass = isAutoEntityOn ? 'active' : '';
+            const onButtonClass = !isAutoEntityOn && isEntityOn ? 'active' : '';
+            const offButtonClass = !isAutoEntityOn && !isEntityOn ? 'active' : '';
+
 
             this.content.innerHTML = `
                 <style>
@@ -167,10 +178,29 @@ class LightCard2025 extends HTMLElement {
                         margin: 2px;
                         text-align: center;
                     }
-                    .control-btn.active, .rider-btn.active {
-                        background-color: #007bff;
-                        border-color: #007bff;
-                        color: white;
+                    #auto {
+                        background-color: ${config.autoButtonColor};
+                    }  
+                    #auto.active {
+                        background-color: ${config.autoButtonActiveColor};
+                    }  
+                    #on {
+                        background-color: ${config.autoButtonColor};
+                    }  
+                    #on.active {
+                        background-color: ${config.autoButtonActiveColor};
+                    }  
+                    #off {
+                        background-color: ${config.autoButtonColor};
+                    }  
+                    #off.active {
+                        background-color: ${config.autoButtonActiveColor};
+                    }  
+                    .rider-btn {
+                        background: ${config.riderButtonColor};
+                    }   
+                    .rider-btn.active {
+                        background-color: ${config.riderButtonActiveColor};
                     }
                     .control-btn:hover, .rider-btn:hover {
                         filter: brightness(0.8);
@@ -179,9 +209,12 @@ class LightCard2025 extends HTMLElement {
                         margin: 8px 0;
                     }
                     .slider-header label {
-                        display: flex;
+                        display: ${config.showSliderLabels ? 'flex' : 'none'};
                         justify-content: space-between;
-                        font-size: smaller; /* Smaller font size */
+                        font-size: smaller; 
+                    }
+                    .slider-header label span {
+                        display: ${config.showSliderValues ? 'block' : 'none'};
                     }
                     .slider-header label span div {
                         display: inline-block;
@@ -191,7 +224,7 @@ class LightCard2025 extends HTMLElement {
                     }
                     .slider {
                         -webkit-appearance: none;
-                        width: calc(100% - 16px); /* Adjusted width to account for padding */
+                        width: calc(100% - 16px); 
                         height: 30px;
                         background: #d3d3d3;
                         border-radius: 8px;
@@ -252,16 +285,16 @@ class LightCard2025 extends HTMLElement {
                     ${editorBtnHTML}
                 </div>
                 <div class="control-group">
-                    ${config.showAutoButton ? `
-                    <button class="control-btn" id="auto" data-mode="auto" title="Automatisch">
+                    ${config.showAutoButton && autoState ? `
+                    <button class="control-btn ${autoButtonClass}" id="auto" data-mode="auto" title="Automatisch">
                         <ha-icon icon="${autoButtonIcon}"></ha-icon>
-                    </button>`: ''}
+                    </button>` : ''}
                     ${config.showOnButton ? `
-                    <button class="control-btn" id="on" data-mode="on" title="An">
+                    <button class="control-btn ${onButtonClass}" id="on" data-mode="on" title="An">
                         <ha-icon icon="${onButtonIcon}"></ha-icon>
                     </button>` : ''}
                     ${config.showOffButton ? `
-                    <button class="control-btn" id="off" data-mode="off" title="Aus">
+                    <button class="control-btn ${offButtonClass}" id="off" data-mode="off" title="Aus">
                         <ha-icon icon="${offButtonIcon}"></ha-icon>
                     </button>` : ''}
                 </div>
@@ -320,19 +353,21 @@ class LightCard2025 extends HTMLElement {
     }
 
     setConfig(config) {
-        if (!config.entity) {
-            throw new Error('Du musst eine Licht-Entität (light.*) angeben');
-        }
+        if (!config.entity) { throw new Error('Du musst eine Entität (light.* oder switch.*) angeben'); }
+    
+        if (!config.entity.startsWith('light.') && !config.entity.startsWith('switch.')) { throw new Error('Die Entität muss entweder eine Licht-Entität (light.*) oder eine Schalter-Entität (switch.*) sein. Bitte überprüfe deine Konfiguration.'); }    
+        
+        if (config.autoEntity && !config.autoEntity.startsWith('automation.')) { throw new Error('Die optionale Entität autoEntity muss eine Automatisierungs-Entität sein (automation.*)'); }    
 
-        const entityId = config.entity;
-        if (!entityId.startsWith('light.')) {
-            throw new Error('Die Hauptentität muss eine Licht-Entität sein (light.*)');
-        }
-
-        if (config.autoEntity && !config.autoEntity.startsWith('automation.')) {
-            throw new Error('Die optionale Entität autoEntity muss eine Automatisierungs-Entität sein (automation.*)');
-        }    
-
+        if (config.autoButtonColor && !this._validateCssColor(config.autoButtonColor)) { throw new Error('Die angegebene Farbe für autoButtonColor ist nicht CSS-kompatibel'); }
+        if (config.autoButtonActiveColor && !this._validateCssColor(config.autoButtonActiveColor)) { throw new Error('Die angegebene Farbe für autoButtonActiveColor ist nicht CSS-kompatibel'); }
+        if (config.onButtonColor && !this._validateCssColor(config.onButtonColor)) { throw new Error('Die angegebene Farbe für onButtonColor ist nicht CSS-kompatibel'); }
+        if (config.onButtonActiveColor && !this._validateCssColor(config.onButtonActiveColor)) { throw new Error('Die angegebene Farbe für onButtonActiveColor ist nicht CSS-kompatibel'); }
+        if (config.offButtonColor && !this._validateCssColor(config.offButtonColor)) { throw new Error('Die angegebene Farbe für offButtonColor ist nicht CSS-kompatibel'); }
+        if (config.offButtonActiveColor && !this._validateCssColor(config.offButtonActiveColor)) { throw new Error('Die angegebene Farbe für offButtonActiveColor ist nicht CSS-kompatibel'); }
+        if (config.riderButtonColor && !this._validateCssColor(config.riderButtonColor)) { throw new Error('Die angegebene Farbe für riderButtonColor ist nicht CSS-kompatibel'); }
+        if (config.riderButtonActiveColor && !this._validateCssColor(config.riderButtonActiveColor)) { throw new Error('Die angegebene Farbe für riderButtonActiveColor ist nicht CSS-kompatibel'); }
+    
         this._config = {
             showIcon: true,
             showName: true,
@@ -340,6 +375,16 @@ class LightCard2025 extends HTMLElement {
             showAutoButton: true,
             showOnButton: true,
             showOffButton: true,
+            autoButtonColor: 'transparent',
+            autoButtonActiveColor: '#007bff',
+            onButtonColor: 'transparent',
+            onButtonActiveColor: '#007bff',
+            offButtonColor: 'transparent',
+            offButtonActiveColor: '#007bff',
+            riderButtonColor: 'transparent',
+            riderButtonActiveColor: '#007bff',
+            showSliderLabels: true,
+            showSliderValues: true,
             ...config
         };
         this.render();
@@ -350,12 +395,15 @@ class LightCard2025 extends HTMLElement {
     }
 
     _attachEventListeners() {
+        const isLightEntity = this._config.entity.startsWith('light.');
         const editorButton = this.content.querySelector('#editor-btn');
         if (editorButton) {
             editorButton.addEventListener('click', () => {
                 const editorContent = this.content.querySelector('#editor-content');
-                this.editorContent.style.display = this.editorContentVisible ? 'none' : 'block';
-                this.editorContentVisible = !this.editorContentVisible;
+                if (editorContent) {
+                    editorContent.style.display = this.editorContentVisible ? 'none' : 'block';
+                    this.editorContentVisible = !this.editorContentVisible;
+                }
             });
         }
 
@@ -365,7 +413,28 @@ class LightCard2025 extends HTMLElement {
                 const mode = event.currentTarget.dataset.mode;
                 controlButtons.forEach(btn => btn.classList.remove('active'));
                 event.currentTarget.classList.add('active');
-                // Handle mode change here
+                const entityId = this._config.entity;
+                const autoEntityId = this._config.autoEntity;
+                if (mode === 'auto') {
+                    if (autoEntityId) {
+                        this._hass.callService('automation', 'turn_on', { entity_id: autoEntityId })
+                            .catch(err => console.error(`Fehler beim Einschalten der Automatisierung (${autoEntityId}):`, err));
+                    }
+                } else if (mode === 'on') {
+                    if (autoEntityId) {
+                        this._hass.callService('automation', 'turn_off', { entity_id: autoEntityId })
+                            .catch(err => console.error(`Fehler beim Ausschalten der Automatisierung (${autoEntityId}):`, err));
+                    }
+                    this._hass.callService(isLightEntity ? 'light' : 'switch', 'turn_on', { entity_id: entityId })
+                        .catch(err => console.error(`Fehler beim Einschalten der Entität (${entityId}):`, err));
+                } else if (mode === 'off') {
+                    if (autoEntityId) {
+                        this._hass.callService('automation', 'turn_off', { entity_id: autoEntityId })
+                            .catch(err => console.error(`Fehler beim Ausschalten der Automatisierung (${autoEntityId}):`, err));
+                    }
+                    this._hass.callService(isLightEntity ? 'light' : 'switch', 'turn_off', { entity_id: entityId })
+                        .catch(err => console.error(`Fehler beim Ausschalten der Entität (${entityId}):`, err));
+                }
             });
         });
 
@@ -386,6 +455,16 @@ class LightCard2025 extends HTMLElement {
     _validateIcon(icon) {
         const mdiPattern = /^mdi:[a-z0-9-]+$/;
         return mdiPattern.test(icon) ? icon : null;
+    }
+
+    _validateCssColor(color) {
+        const s = new Option().style;
+        s.color = color;
+        if (s.color === '') {
+            console.warn(`Ungültige CSS-Farbe: ${color}`);
+            return false;
+        }
+        return true;
     }
 
     _generateEditorBtnHTML() {
@@ -412,6 +491,7 @@ class LightCard2025 extends HTMLElement {
 }
 
 function kelvinToRgb(kelvin) {
+    kelvin = Math.max(1000, Math.min(40000, kelvin));
     let temp = kelvin / 100;
     let red, green, blue;
     if (temp <= 66) {
@@ -427,11 +507,7 @@ function kelvinToRgb(kelvin) {
 }
 
 function generateHueGradient() {
-    const colors = [];
-    for (let i = 0; i <= 360; i += 10) {
-        colors.push(`hsl(${i}, 100%, 50%)`);
-    }
-    return colors.join(', ');
+    return Array.from({ length: 37 }, (_, i) => `hsl(${i * 10}, 100%, 50%)`).join(', ');
 }
 
 customElements.define('light-card-2025', LightCard2025);
