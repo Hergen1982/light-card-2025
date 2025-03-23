@@ -1,16 +1,38 @@
 class LightCard2025 extends HTMLElement {
     constructor() {
         super();
-        this.editorContentVisible = false; // Initial state of editor-content
+        this.editorContentVisible = false;
+        this._prevEntity = null;
     }
 
     set hass(hass) {
         this._hass = hass;
-        this.render();
+
+        if (this._prevEntity !== this._config.entity) {
+            return;
+        }
+
+        const entityId = this._config.entity;
+        const autoEntityId = this._config.autoEntity;
+    
+        const stateObj = hass.states[entityId];
+        const autoStateObj = autoEntityId ? hass.states[autoEntityId] : null;
+    
+        if (!stateObj) {
+            return;
+        }
+
+        const hasEntityChanged = JSON.stringify(stateObj) !== JSON.stringify(this._prevStateObj);
+        const hasAutoEntityStateChanged = autoStateObj && autoStateObj.state !== (this._prevAutoEntityState || null);
+
+        if (hasEntityChanged || hasAutoEntityStateChanged) {
+            this._prevStateObj = { ...stateObj };
+            this._prevAutoEntityState = autoStateObj ? autoStateObj.state : null;
+            this.render();
+        }
     }
 
     connectedCallback() {
-        // Initial rendering when element is connected to the DOM
         this.render();
     }
 
@@ -27,14 +49,23 @@ class LightCard2025 extends HTMLElement {
         }
 
         const entityId = this._config.entity;
+        const autoEntityId = this._config.autoEntity;
         const state = this._hass.states[entityId];
+        const autoState = autoEntityId ? this._hass.states[autoEntityId] : null;
         const attributes = state.attributes;
         const config = this._config;
-
+    
         if (state) {
-            const validateIcon = this._validateIcon(config.icon); 
+            let validateIcon = this._validateIcon(config.icon); 
             const icon = validateIcon ? validateIcon : attributes.icon ? attributes.icon : 'mdi:lightbulb';
             const name = config.name ? config.name : attributes.friendly_name ? attributes.friendly_name : entityId;
+            validateIcon = this._validateIcon(config.autoButtonIcon);
+            const autoButtonIcon = validateIcon ? validateIcon : 'mdi:lightbulb-auto';
+            validateIcon = this._validateIcon(config.onButtonIcon);
+            const onButtonIcon = validateIcon ? validateIcon : 'mdi:lightbulb-on';
+            validateIcon = this._validateIcon(config.offButtonIcon);
+            const offButtonIcon = validateIcon ? validateIcon : 'mdi:lightbulb-off-outline';
+
             const hue = attributes.hs_color ? attributes.hs_color[0].toFixed(0) : 0;
             const saturation = attributes.hs_color ? attributes.hs_color[1].toFixed(2) : 0;
             const brightness = attributes.brightness ? attributes.brightness : 1;
@@ -92,6 +123,7 @@ class LightCard2025 extends HTMLElement {
                         background: none;
                         border: none;
                         cursor: pointer;
+                        margin-left: auto;
                     }
                     .editor-btn:hover ha-icon {
                         filter: brightness(0.8);
@@ -220,15 +252,18 @@ class LightCard2025 extends HTMLElement {
                     ${editorBtnHTML}
                 </div>
                 <div class="control-group">
+                    ${config.showAutoButton ? `
                     <button class="control-btn" id="auto" data-mode="auto" title="Automatisch">
-                        <ha-icon icon="mdi:lightbulb-auto"></ha-icon>
-                    </button>
+                        <ha-icon icon="${autoButtonIcon}"></ha-icon>
+                    </button>`: ''}
+                    ${config.showOnButton ? `
                     <button class="control-btn" id="on" data-mode="on" title="An">
-                        <ha-icon icon="mdi:lightbulb-on"></ha-icon>
-                    </button>
+                        <ha-icon icon="${onButtonIcon}"></ha-icon>
+                    </button>` : ''}
+                    ${config.showOffButton ? `
                     <button class="control-btn" id="off" data-mode="off" title="Aus">
-                        <ha-icon icon="mdi:lightbulb-off-outline"></ha-icon>
-                    </button>
+                        <ha-icon icon="${offButtonIcon}"></ha-icon>
+                    </button>` : ''}
                 </div>
                 <div id="brightness" class="slider-header" title="Helligkeit: ${brightness} bit">
                     <label>Helligkeit: <span id="brightness-value"><div>${(brightness/2.55).toFixed(2)} %</div><div>${brightness} bit</div></span></label>
@@ -286,12 +321,25 @@ class LightCard2025 extends HTMLElement {
 
     setConfig(config) {
         if (!config.entity) {
-            throw new Error('Du musst eine Entität angeben');
+            throw new Error('Du musst eine Licht-Entität (light.*) angeben');
         }
+
+        const entityId = config.entity;
+        if (!entityId.startsWith('light.')) {
+            throw new Error('Die Hauptentität muss eine Licht-Entität sein (light.*)');
+        }
+
+        if (config.autoEntity && !config.autoEntity.startsWith('automation.')) {
+            throw new Error('Die optionale Entität autoEntity muss eine Automatisierungs-Entität sein (automation.*)');
+        }    
+
         this._config = {
             showIcon: true,
             showName: true,
             showEditors: 'admin',
+            showAutoButton: true,
+            showOnButton: true,
+            showOffButton: true,
             ...config
         };
         this.render();
@@ -341,13 +389,17 @@ class LightCard2025 extends HTMLElement {
     }
 
     _generateEditorBtnHTML() {
+        const validateIcon = this._validateIcon(this._config.editorButtonIcon);
+        const editorButtonIcon = validateIcon ? validateIcon : 'mdi:dots-vertical-circle-outline';
+
         const editorLinks = this._config.editors.map(editor => {
             const name = editor.name ? editor.name : editor.url;
             return `<a href="${editor.url}">${name}</a>`;
         }).join('');
+
         return `
             <button class="editor-btn" id="editor-btn" title="Editor-Links">
-                <ha-icon icon="mdi:dots-vertical-circle-outline"></ha-icon>
+                <ha-icon icon="${editorButtonIcon}"></ha-icon>
                 <div class="editor-content" id="editor-content">
                     ${editorLinks}
                 </div>
