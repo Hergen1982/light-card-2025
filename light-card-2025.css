@@ -1,0 +1,302 @@
+ha-card {
+    background: var(--card-background, var(--ha-card-background, var(--card-background-color, #fff)));
+    border: var(--card-border, var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, #e0e0e0)));
+    border-radius: var(--card-border-radius, var(--ha-card-border-radius,12px));
+    margin: var(--card-margin, inherit);
+    outline: var(--card-outline, inherit); 
+    padding: var(--card-padding, 8px);
+}
+#header {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+}
+#icon {
+    background: var(--icon-background, none);
+    border: var(--icon-border, none);
+    border-radius: var(--icon-border-radius, 25px);
+    color: var(--icon-color, var(--state-icon-color, #44739e));
+    margin: var(--icon-margin, 0);
+    outline: var(--icon-outline, none);
+    padding: var(--icon-padding, 4px);
+    --mdc-icon-size: var(--icon-icon-size, 30px);
+}
+#header.active #icon {
+    background: var(--icon-active-background, hsl(30, 100%, 75%));
+    color: var(--icon-active-color, hsl(30, 100%, 25%));
+}
+#name {
+    background: var(--name-background, none);
+    border: var(--name-border, none);
+    border-radius: var(--name-border-radius, 0);
+    color: var(--name-color, var(--primary-text-color, white));
+    font-size: var(--name-font-size, 18px);
+    font-style: var(--name-font-style, normal);
+    font-weight: var(--name-font-weight, bold);
+    margin: var(--name-margin, 0 auto 0 8px);
+    outline: var(--name-outline, none);
+    padding: var(--name-padding, 0);
+    text-align: var(--name-text-align, left);
+    text-decoration: var(--name-text-decoration, none);
+}
+#menu {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: auto;
+}
+#menu-icon {
+    background: var(--menu-button-background, none);
+    border: var(--menu-button-border, none);
+    border-radius: var(--menu-button-border-radius, 0);
+    color: var(--menu-button-color, var(--primary-text-color, 0));
+    margin: var(--menu-button-margin, 0);
+    outline: var(--menu-button-outline, none);
+    padding: var(--menu-button-padding, 0);
+    --mdc-icon-size: var(--menu-button-icon-size, 30px);
+}
+#menu-icon:hover, .control-button:hover, .tab-button:hover {
+    filter: brightness(0.5);
+}
+#menu-content {
+    background: var(--menu-content-background, white);
+    border: var(--menu-content-border, none);
+    border-radius: var(--menu-content-border-radius, 10px);
+    display: none;
+    position: absolute;
+    right: 0;
+    white-space: nowrap;
+    z-index: 1;
+}
+#menu-content a {
+    border-radius: var(--menu-content-border-radius, 10px);
+    color: var(--menu-content-color, black);
+    font-size: var(--menu-content-font-size, inherit);
+    font-style: var(--menu-content-font-style, none);
+    font-weight: var(--menu-content-font-weight, normal);
+    margin: var(--menu-content-margin, 0);
+    padding: var(--menu-content-padding, 12px);
+    text-align: var(--menu-content-text-align, center);
+    text-decoration: var(--menu-content-text-decoration, none);
+    display: block;
+}
+#menu-content a:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+#control, #tab {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin: 8px 0;
+
+}
+.control-button, .tab-button {
+    background: var(--auto-button-background, var(--button-background, none));
+    border: var(--button-border, 1px solid #ccc);
+    border-radius: var(--button-border-radius, 8px);
+    color: var(--button-color, var(--primary-text-color, white));
+    font-size: var(--button-font-size, inherit);
+    font-style: var(--button-font-style, inherit);
+    font-weight: var(--button-font-weight, inherit);
+    text-align: var(--button-text-align, center);
+    text-decoration: var(--button-text-decoration, inherit);
+    margin: var(--button-margin, 2px);
+    outline: var(--button-outline, none);
+    padding: var(--button-padding, 8px);
+    --mdc-icon-size: var(--button-icon-size, 30px);
+    cursor: pointer;
+    flex: 1 1 auto;
+}
+.control-button.active, .tab-button.active {
+    background: var(--button-active-background, #007bff);
+    color: var(--button-active-color, white);
+}
+#control-auto {
+    background: var(--auto-button-background, var(--button-background, none));
+    color: var(--auto-button-color, var(--button-color, var(--primary-text-color, white)));
+}
+#control-auto.active {
+    background: var(--auto-button-active-background, var(--button-active-background, #007bff));
+    color: var(--auto-button-active-color, var(--button-active-color, white));
+}
+#control-on {
+    background: var(--on-button-background, var(--button-background, none));
+    color: var(--on-button-color, var(--button-color, var(--primary-text-color, white)));
+}
+#control-on.active {
+    background: var(--on-button-active-background, var(--button-active-background, #007bff));
+    color: var(--on-button-active-color, var(--button-active-color, white));
+}
+#control-off {
+    background: var(--off-button-background, var(--button-background, none));
+    color: var(--off-button-color, var(--button-color, var(--primary-text-color, white)));
+}
+#control-off.active {
+    background: var(--off-button-active-background, var(--button-active-background, #007bff));
+    color: var(--off-button-active-color, var(--button-active-color, white));
+}
+.tab-button {
+    background: var(--tab-button-background, var(--button-background, none));
+    color: var(--tab-button-color, var(--button-color, var(--primary-text-color, white)));
+}
+.tab-button.active {
+    background: var(--tab-button-active-background, var(--button-active-background, #007bff));
+    color: var(--tab-button-active-color, var(--button-active-color, white));
+}
+.slider-field {
+    background: var(--sliders-label-background, none);
+    border: var(--sliders-label-border, none);
+    border-radius: var(--sliders-label-border-radius, 0);
+    margin: 8px 0;
+}
+.slider-field.enabled {
+    display: none;
+}
+.slider-field label {
+    color: var(--sliders-label-color, var(--primary-text-color, white));
+    font-size: var(--sliders-label-font-size, smaller);
+    font-style: var(--sliders-label-font-style, normal);
+    font-weight: var(--sliders-label-font-weight, normal);
+    margin: var(--sliders-label-margin, 0);
+    text-align: var(--sliders-label-text-align, left);
+    text-decoration: var(--sliders-label-text-decoration, none);
+    padding: var(--sliders-label-padding, 0);
+    display: flex;
+    
+}
+.slider-field label span {
+    margin-left: auto;
+}
+.slider-field label span div {
+    color: var(--sliders-values-color, var(--primary-text-color, white));
+    font-size: var(--sliders-values-font-size, inherit);
+    font-weight: var(--sliders-values-font-weight, inherit);
+    font-style: var(--sliders-values-font-style, inherit);
+    margin: var(--sliders-values-margin, 0);
+    min-width: var(--sliders-values-width, 100px);
+    text-decoration: var(--sliders-values-text-decoration, inherit);
+    text-align: var(--sliders-values-text-align, right);
+    padding: var(--sliders-values-padding, 0 6px 0 0);
+    display: inline-block;
+}
+.slider-field div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.slider-button {
+    --mdc-icon-size: var(--button-icon-size, 30px);
+    background: var(--slider-button-background, var(--button-background, none));
+    color: var(--slider-button-color, var(--button-color, var(--primary-text-color, white)));
+    border: var(--button-border, 1px solid #ccc);
+    border-radius: var(--button-border-radius, 8px);
+    padding: var(--button-padding, 8px);
+    margin: var(--button-margin, 2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.slider-button:hover {
+    filter: brightness(0.5);
+}
+.slider-container {
+    flex: 1;
+    position: relative;
+}
+.slider-value-circle {
+    background: var(--slider-value-circle-background, #007bff);
+    border: var(--slider-value-circle-border, 1px solid #ccc);
+    border-radius: var(--slider-value-circle-border-radius, 25px);
+    color: var(--slider-value-circle-color, var(--primary-text-color, white));
+    font-size: var(--slider-value-circle-font-size, inherit);
+    font-weight: var(--slider-value-circle-font-weight, bold);
+    font-style:  var(--slider-value-circle-font-style, normal);
+    height: var(--slider-value-circle-height, 40px);
+    text-decoration:  var(--slider-value-circle-text-decoration, none);
+    top: var(--slider-value-circle-top, -50px);
+    width: var(--slider-value-circle-width, 40px);
+    position: relative;
+    left: 50%;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    visibility: hidden;
+    z-index: 10;
+}
+.slider-container.active .slider-value-circle {
+    visibility: visible !important;
+}
+.slider {
+    border: var(--sliders-border, none);
+    border-radius: var(--sliders-border-radius, 8px);
+    height: var(--sliders-height, 30px);
+    margin: var(--sliders-margin, 0);
+    outline: var(--sliders-outline, none);
+    padding: var(--sliders-padding, 4px);
+    width: var(--sliders-width, calc(100% - 8px)); 
+    position: absolute;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+}
+#brightness-slider {
+    background: var(--slider-brightness-background, linear-gradient(to right, rgb(0, 0, 0), rgb(255, 127, 0)));
+}
+#color-temp-kelvin-slider {
+    background: var(--slider-color-temp-kelvin-background, linear-gradient(to right, rgb(255, 137, 14), rgb(255, 255, 231)));
+}
+#color-temp-slider{
+    background: var(--slider-color-temp-background, linear-gradient(to right, rgb(255, 255, 231), rgb(255, 137, 14)));
+}
+#hue-slider {
+    background: var(--slider-hue-background, linear-gradient(to right, hsl(0, 100%, 50%), hsl(30, 100%, 50%), hsl(60, 100%, 50%), hsl(90, 100%, 50%), hsl(120, 100%, 50%), hsl(150, 100%, 50%), hsl(180, 100%, 50%), hsl(210, 100%, 50%), hsl(240, 100%, 50%), hsl(270, 100%, 50%), hsl(300, 100%, 50%), hsl(330, 100%, 50%), hsl(360, 100%, 50%)));
+}
+#saturation-slider {
+    background: var(--slider-saturation-background, linear-gradient(to right, hsl(0, 0%, 50%), hsl(0, 100%, 50%)));
+}
+#red-slider {
+    background: var(--slider-red-background, linear-gradient(to right, rgb(0, 0, 0), rgb(255, 0, 0)));
+}
+#green-slider {
+    background: var(--slider-green-background, linear-gradient(to right, rgb(0, 0, 0), rgb(0, 255, 0)));
+}
+#blue-slider {
+    background: var(--slider-blue-background, linear-gradient(to right, rgb(0, 0, 0), rgb(0, 0, 255)));
+}
+#white-slider {
+    background: var(--slider-white-background, linear-gradient(to right, rgb(0, 0, 0), rgb(255, 255, 255)));
+}
+#warm-white-slider {
+    background: var(--slider-warm-white-background, linear-gradient(to right, rgb(0, 0, 0), rgb(255, 137, 14)));
+}
+#cold-white-slider {
+    background: var(--slider-cold-white-background, linear-gradient(to right, rgb(0, 0, 0), rgb(255, 255, 231)));
+}
+.slider::-webkit-slider-thumb {
+    width: var(--sliders-thumb-width, 8px);
+    height: var(--sliders-thumb-height, 40px);
+    border-radius: var(--sliders-thumb-border-radius, 5px);
+    border: var(--sliders-thumb-border, 2px solid #444);
+    outline: var(--sliders-thumb-outline, 2px solid #ccc);
+    background: var(--sliders-thumb-background, transparent);
+    appearance: none;
+    -webkit-appearance: none;
+}
+.slider::-moz-range-thumb {
+    width: var(--sliders-thumb-width, 8px);
+    height: var(--sliders-thumb-height, 40px);
+    border-radius: var(--sliders-thumb-border-radius, 5px);
+    border: var(--sliders-thumb-border, 2px solid #444);
+    outline: var(--sliders-thumb-outline, 2px solid #ccc);
+    background: var(--sliders-thumb-background, transparent);
+    appearance: none;
+}
+.slider:hover::-webkit-slider-thumb {
+    filter: brightness(0.5);
+}
+.slider:hover::-moz-range-thumb {
+    filter: brightness(0.5);
+}
